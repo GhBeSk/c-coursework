@@ -1,0 +1,20 @@
+Shuffles	Average Quality
+----------------------------
+1		0.734694
+2		0.612245
+3		0.571428
+4		0.510204
+5		0.489796
+6		0.530612
+7		0.571428
+8		0.591837
+9		0.612245
+10		0.591837
+11		0.591837
+12		0.591837
+13		0.632653
+14		0.612245
+15		0.571428
+
+Based on the results, 4 shuffles are needed to properly shuffle a list of length 50.
+The average quality is computed over 30 trials to obtain more reliable results. The optimal number of shuffles needed to properly shuffle a list of length 50 is determined by finding the average quality closest to 0.5. It is important to note that the results may vary between different runs due to the randomness involved in the shuffling process. However, the program should generally give you a good estimate of the number of shuffles needed to properly shuffle a list of length 50 based on the average quality closest to 0.5.
