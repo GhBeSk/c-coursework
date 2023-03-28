@@ -19,7 +19,8 @@ int main(int argc, char *argv[])
     }
 
     int deck[DECK_SIZE];
-    for (int i = 0; i < DECK_SIZE; i++) {
+    int i;
+    for (i = 0; i < DECK_SIZE; i++) {
         deck[i] = i % 13 + 2;
     }
 

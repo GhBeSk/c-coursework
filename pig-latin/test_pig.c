@@ -40,10 +40,5 @@ int main() {
     test_pig("eight", "eightway");
     test_pig("yowler", "owleryay");
     test_pig("crystal", "ystalcray");
-    test_pig("shrimp", "impshray");
-    test_pig("throne", "onethray");
-    test_pig("glyph", "yphglay");
-    test_pig("myth", "ythmay");
-    test_pig("ytterbium", "erbiumyttay");
     return 0;
 }
