@@ -1,12 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "shuffle.h"
+#include <limits.h>
+#include "beggar.h"
 
 typedef struct {
     int shortest;
     int longest;
     double average;
-} stats;
+} statistics;
 
 int finished(int **players, int Nplayers) {
     int finished_count = 0;
@@ -139,7 +141,7 @@ int beggar(int Nplayers, int *deck, int talkative) {
     return total_turns;
 }
 
-stats get_statistics(int Nplayers, int games) {
+statistics get_statistics(int Nplayers, int games) {
     int *deck = (int *)malloc(52 * sizeof(int));
     init_deck(deck);
 
@@ -160,7 +162,7 @@ stats get_statistics(int Nplayers, int games) {
         }
     }
 
-    stats stats;
+    statistics stats;
     stats.shortest = shortest;
     stats.longest = longest;
     stats.average = (double)total_turns / games;
