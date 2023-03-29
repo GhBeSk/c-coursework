@@ -1,11 +1,34 @@
 #ifndef BEGGAR_H
 #define BEGGAR_H
 
-int finished(int *player_sizes, int Nplayers);
-int penalty(int card);
-void shift_left(int *arr, int *size);
-int take_turn(int *player, int *player_size, int *pile, int *pile_size);
+typedef struct {
+    int shortest;
+    int longest;
+    double average;
+} statistics;
+
+// Initialize a deck of cards
+void init_deck(int *deck);
+
+// Shuffle a deck of cards
+void shuffle_deck(int *deck);
+
+// Print a single card
+void print_card(int card);
+
+// Determine if the game is finished
+int finished(int **players, int Nplayers);
+
+// Take a turn in the game
+int take_turn(int **players, int *pile, int *pile_top, int *penalty, int player_index);
+
+// Print the current game state
+void print_game_state(int turn, int top_card, int current_player, int *pile, int pile_size, int **hands, int *hand_sizes, int Nplayers);
+
+// Play the Beggar-My-Neighbor game and return the total number of turns
 int beggar(int Nplayers, int *deck, int talkative);
 
-#endif // BEGGAR_H
+// Get statistics for the Beggar-My-Neighbor game
+statistics get_statistics(int Nplayers, int games);
 
+#endif // BEGGAR_H

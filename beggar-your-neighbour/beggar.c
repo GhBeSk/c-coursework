@@ -1,93 +1,172 @@
 #include <stdio.h>
-#include <stdbool.h>
-#include "beggar.h"
+#include <stdlib.h>
+#include "shuffle.h"
 
-int finished(int *player_sizes, int Nplayers) {
-    int count = 0;
+typedef struct {
+    int shortest;
+    int longest;
+    double average;
+} stats;
+
+int finished(int **players, int Nplayers) {
+    int finished_count = 0;
     for (int i = 0; i < Nplayers; i++) {
-        if (player_sizes[i] == 52) {
-            count++;
+        if (players[i][0] == 0) {
+            finished_count++;
         }
     }
-    return count == Nplayers - 1;
+    return finished_count == Nplayers - 1;
 }
 
-int penalty(int card) {
-    if (card >= 11 && card <= 14) {
-        return 15 - card;
+int take_turn(int **players, int *pile, int *pile_top, int *penalty, int player_index) {
+    int top_card = players[player_index][0];
+    for (int i = 0; i < 51; i++) {
+        players[player_index][i] = players[player_index][i + 1];
     }
-    return 0;
-}
+    players[player_index][51] = 0;
 
-void shift_left(int *arr, int *size) {
-    for (int i = 1; i < *size; i++) {
-        arr[i - 1] = arr[i];
-    }
-    (*size)--;
-}
+    pile[*pile_top] = top_card;
+    (*pile_top)++;
 
-int take_turn(int *player, int *player_size, int *pile, int *pile_size) {
-    int card = player[0];
-    shift_left(player, player_size);
-    pile[*pile_size] = card;
-    (*pile_size)++;
-
-    int pen = penalty(card);
-    if (pen) {
-        return pen;
+    if (*penalty > 0) {
+        (*penalty)--;
+    } else if (top_card > 10) {
+        *penalty = 14 - top_card;
+        return 0;
     }
 
-    return 0;
+    if (*penalty == 0) {
+        int reward = *pile_top;
+        *pile_top = 0;
+        return reward;
+    } else {
+        return 0;
+    }
 }
+
+void print_game_state(int turn, int current_player, int *pile, int pile_top, int penalty, int **players, int Nplayers) {
+    int top_card = pile[pile_top - 1];
+
+    printf("Turn %d Top card in pile is ", turn);
+    print_card(top_card);
+    printf(", so player %d should lay ", current_player);
+    
+    if (top_card >= 11) {
+        printf("%d penalty cards\n", top_card - 10);
+    } else {
+        printf("a single card\n");
+    }
+
+    printf("Pile: ");
+    for (int i = 0; i < pile_top; i++) {
+        print_card(pile[i]);
+        printf(", ");
+    }
+    printf("\n");
+
+    for (int p = 0; p < Nplayers; p++) {
+        if (p == current_player) {
+            printf("* ");
+        } else {
+            printf("  ");
+        }
+        printf("%d: ", p);
+        for (int c = 0; c < 52; c++) {
+            if (players[p][c] != 0) {
+                print_card(players[p][c]);
+                printf(", ");
+            }
+        }
+        printf("\n");
+    }
+}
+
 
 int beggar(int Nplayers, int *deck, int talkative) {
-    int players[Nplayers][52];
-    int player_sizes[Nplayers];
-    int pile[52];
-    int pile_size = 0;
-    int turn = 0;
-
+    int **players = (int **)malloc(Nplayers * sizeof(int *));
     for (int i = 0; i < Nplayers; i++) {
-        player_sizes[i] = 0;
+        players[i] = (int *)calloc(52, sizeof(int));
     }
 
     for (int i = 0; i < 52; i++) {
-        players[i % Nplayers][player_sizes[i % Nplayers]++] = deck[i];
+        players[i % Nplayers][i / Nplayers] = deck[i];
     }
 
-    int currentPlayer = 0;
-    while (!finished(player_sizes, Nplayers)) {
-        turn++;
+    int player_index = 0;
+    int pile[52];
+    int pile_top = 0;
+    int penalty = 0;
+    int total_turns = 0;
+
+    while (!finished(players, Nplayers)) {
         if (talkative) {
-            printf("Turn %d\n", turn);
+            print_game_state(total_turns, player_index, pile, pile_top, penalty, players, Nplayers);
         }
 
-        int pen = take_turn(players[currentPlayer], &player_sizes[currentPlayer], pile, &pile_size);
+        int reward = take_turn(players, pile, &pile_top, &penalty, player_index);
 
-        while (pen > 0 && player_sizes[currentPlayer] > 0) {
-            for (int i = 0; i < pen; i++) {
-                int new_pen = take_turn(players[currentPlayer], &player_sizes[currentPlayer], pile, &pile_size);
-                if (new_pen) {
-                    pen = new_pen;
-                    i = -1;
-                } else {
-                    pen--;
-                }
+        if (reward > 0) {
+            for (int i = 0; i < reward; i++) {
+                players[player_index][pile_top - reward + i] = pile[i];
             }
-
-            if (pen > 0) {
-                break;
-            }
-
-            currentPlayer = (currentPlayer - 1 + Nplayers) % Nplayers;
-            for (int i = 0; i < pile_size; i++) {
-                players[currentPlayer][player_sizes[currentPlayer]++] = pile[i];
-            }
-            pile_size = 0;
+            pile_top = 0;
         }
 
-        currentPlayer = (currentPlayer + 1) % Nplayers;
+        if (talkative && reward != 0) {
+            printf("Player %d takes %d cards\n", player_index + 1, reward);
+        }
+
+        total_turns++;
+
+        player_index = (player_index + 1) % Nplayers;
     }
 
-    return turn;
+    int winner = -1;
+    for (int i = 0; i < Nplayers; i++) {
+        if (players[i][0] != 0) {
+            winner = i;
+            break;
+        }
+    }
+
+    for (int i = 0; i < Nplayers; i++) {
+        free(players[i]);
+        players[i] = NULL;
+    }
+    free(players);
+    players = NULL;
+
+    return total_turns;
 }
+
+stats get_statistics(int Nplayers, int games) {
+    int *deck = (int *)malloc(52 * sizeof(int));
+    init_deck(deck);
+
+    int total_turns = 0;
+    int shortest = INT_MAX;
+    int longest = 0;
+
+    for (int i = 0; i < games; i++) {
+        shuffle_deck(deck);
+        int turns = beggar(Nplayers, deck, 0);
+        total_turns += turns;
+
+        if (turns < shortest) {
+            shortest = turns;
+        }
+        if (turns > longest) {
+            longest = turns;
+        }
+    }
+
+    stats stats;
+    stats.shortest = shortest;
+    stats.longest = longest;
+    stats.average = (double)total_turns / games;
+
+    free(deck);
+
+    return stats;
+}
+

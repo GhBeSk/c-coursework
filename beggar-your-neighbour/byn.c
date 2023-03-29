@@ -1,56 +1,31 @@
-// byn.c
 #include <stdio.h>
 #include <stdlib.h>
-#include <limits.h>
 #include "beggar.h"
-#include "byn.h"
 
-Stats statistics(int Nplayers, int games) {
-    Stats stats = {INT_MAX, 0, 0.0};
-
-    int deck[52];
-    for (int i = 0; i < 52; i++) {
-        deck[i] = i % 13 + 2;
-    }
-
-    int total_turns = 0;
-    for (int game = 0; game < games; game++) {
-        shuffle(deck, 52, -1);
-        int turns = beggar(Nplayers, deck, 0);
-
-        if (turns < stats.shortest) {
-            stats.shortest = turns;
-        }
-        if (turns > stats.longest) {
-            stats.longest = turns;
-        }
-
-        total_turns += turns;
-    }
-
-    stats.average = (double)total_turns / games;
-    return stats;
-}
+// Add the statistics struct and get_statistics function here
 
 int main(int argc, char *argv[]) {
-    if (argc < 3) {
-        printf("Usage: %s <max_players> <number_of_trials>\n", argv[0]);
+    if (argc != 3) {
+        printf("Usage: %s <max_players> <trials>\n", argv[0]);
         return 1;
     }
 
     int max_players = atoi(argv[1]);
     int trials = atoi(argv[2]);
 
-    FILE *file = fopen("statistics.txt", "w");
-
-    fprintf(file, "Players\tShortest\tLongest\tAverage\n");
-    for (int Nplayers = 2; Nplayers <= max_players; Nplayers++) {
-        Stats stats = statistics(Nplayers, trials);
-        fprintf(file, "%d\t%d\t%d\t%.2f\n", Nplayers, stats.shortest, stats.longest, stats.average);
+    FILE *output_file = fopen("statistics.txt", "w");
+    if (output_file == NULL) {
+        perror("Error opening statistics.txt");
+        return 1;
     }
 
-    fclose(file);
-    printf("Statistics written to 'statistics.txt'.\n");
+    for (int players = 2; players <= max_players; players++) {
+        statistics stats = get_statistics(players, trials);
+        fprintf(output_file, "Players: %d | Shortest: %d | Longest: %d | Average: %.2f\n", players, stats.shortest, stats.longest, stats.average);
+    }
+
+    fclose(output_file);
 
     return 0;
 }
+
