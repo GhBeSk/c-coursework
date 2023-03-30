@@ -16,6 +16,8 @@ void shuffle_deck(int *deck);
 // Print a single card
 void print_card(int card);
 
+char rankChar(int card);
+
 // Determine if the game is finished
 int finished(int **players, int Nplayers);
 
