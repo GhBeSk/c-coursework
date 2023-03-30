@@ -1,8 +1,29 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include "shuffle.h"
 #include <limits.h>
 #include "beggar.h"
+
+void init_deck(int *deck) {
+    for (int i = 0; i < 52; i++) {
+        deck[i] = i + 1;
+    }
+}
+
+void shuffle_deck(int *deck) {
+    shuffle(deck, 52, -1); // Use -1 as seed for time-based randomization
+}
+
+void print_card(int card) {
+    const char *suits[] = {"Clubs", "Diamonds", "Hearts", "Spades"};
+    const char *ranks[] = {"2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King", "Ace"};
+
+    int suit = (card - 1) / 13;
+    int rank = (card - 1) % 13;
+
+    printf("%s of %s", ranks[rank], suits[suit]);
+}
 
 int finished(int **players, int Nplayers) {
     int finished_count = 0;
