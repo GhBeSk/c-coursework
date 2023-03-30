@@ -92,7 +92,7 @@ void print_game_state(int turn, int current_player, int *pile, int pile_top, int
     }
 }
 
-int beggar(int Nplayers, int seed) {
+int beggar(int Nplayers, int *deck, int talkative) {
     int turn = 0;
     int current_player = 0;
     int winner = -1;
@@ -101,10 +101,6 @@ int beggar(int Nplayers, int seed) {
     for (int i = 0; i < Nplayers; i++) {
         players[i] = calloc(52, sizeof(int));
     }
-
-    int deck[52];
-    init_deck(deck);
-    shuffle_deck(deck);
 
     for (int i = 0; i < 52; i++) {
         players[i % Nplayers][i / Nplayers] = deck[i];
@@ -135,7 +131,9 @@ int beggar(int Nplayers, int seed) {
             penalty = 0;
         }
 
-        print_game_state(turn, current_player, pile, pile_top, penalty, players, Nplayers);
+        if (talkative) {
+            print_game_state(turn, current_player, pile, pile_top, penalty, players, Nplayers);
+        }
 
         do {
             current_player = (current_player + 1) % Nplayers;
@@ -152,3 +150,5 @@ int beggar(int Nplayers, int seed) {
 
     return winner;
 }
+
+
