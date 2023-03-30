@@ -41,16 +41,32 @@ int finished(int **players, int Nplayers) {
     return finished_count == Nplayers - 1;
 }
 
+/**
+ * @brief Performs a turn of the game.
+ *
+ * @param players The 2D array of cards held by each player.
+ * @param pile The array representing the pile of cards.
+ * @param pile_top The index of the top card in the pile.
+ * @param penalty The number of penalty cards to be played.
+ * @param player_index The index of the player taking the turn.
+ * @return The number of cards rewarded for completing the pile, or 0 if no reward is given.
+ */
+
 int take_turn(int **players, int *pile, int *pile_top, int *penalty, int player_index) {
+    // Get the top card of the current player's hand
     int top_card = players[player_index][0];
+    // Shift all the remaining cards in the player's hand one position to the left
     for (int i = 0; i < 51; i++) {
         players[player_index][i] = players[player_index][i + 1];
     }
+    // Set the last card to zero to signify that it's empty
     players[player_index][51] = 0;
 
+    // Add the top card to the pile
     pile[*pile_top] = top_card;
     (*pile_top)++;
 
+    // If there is a penalty, decrement it. If not and the top card is a picture card, set the penalty to the difference between the card and 14.
     if (*penalty > 0) {
         (*penalty)--;
     } else if (top_card > 10) {
@@ -58,6 +74,8 @@ int take_turn(int **players, int *pile, int *pile_top, int *penalty, int player_
         return 0;
     }
 
+    // If the penalty is zero, return the number of cards in the pile as a reward, reset the pile top to zero, and clear the penalty.
+    // If there is still a penalty, return zero as there is no reward.
     if (*penalty == 0) {
         int reward = *pile_top;
         *pile_top = 0;
@@ -66,6 +84,18 @@ int take_turn(int **players, int *pile, int *pile_top, int *penalty, int player_
         return 0;
     }
 }
+
+/**
+ * Print the current state of the game.
+ * 
+ * @param turn the current turn number
+ * @param current_player the index of the current player
+ * @param pile the pile of played cards
+ * @param pile_top the index of the top card on the pile
+ * @param penalty the current penalty for playing a high card
+ * @param players an array of arrays of cards held by each player
+ * @param Nplayers the number of players
+ */
 
 void print_game_state(int turn, int current_player, int *pile, int pile_top, int penalty, int **players, int Nplayers) {
     printf("Turn %d ", turn);
@@ -91,6 +121,14 @@ void print_game_state(int turn, int current_player, int *pile, int pile_top, int
         printf("\n");
     }
 }
+/**
+ * Play a game of Beggar-My-Neighbour.
+ * 
+ * @param Nplayers the number of players (must be between 1 and 52)
+ * @param deck a pointer to the deck of cards to be used in the game
+ * @param talkative whether to print out each turn (1 for yes, 0 for no)
+ * @return the index of the winning player
+ */
 
 int beggar(int Nplayers, int *deck, int talkative) {
     int turn = 0;
@@ -151,6 +189,13 @@ int beggar(int Nplayers, int *deck, int talkative) {
     return winner;
 }
 
+/**
+ * Play multiple games of Beggar-My-Neighbour and return statistics about the results.
+ * 
+ * @param Nplayers the number of players to use in each game (must be between 1 and 52)
+ * @param games the number of games to play
+ * @return a struct containing statistics about the games played
+ */
 statistics get_statistics(int Nplayers, int games) {
     int total_turns = 0;
     int shortest = INT_MAX;
