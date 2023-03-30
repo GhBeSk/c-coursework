@@ -96,6 +96,7 @@ void print_game_state(int turn, int current_player, int *pile, int pile_top, int
         }
         printf("\n");
     }
+    printf("\n");
 }
 
 int beggar(int Nplayers, int *deck, int talkative) {
