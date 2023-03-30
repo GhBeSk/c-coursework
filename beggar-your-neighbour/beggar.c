@@ -151,4 +151,33 @@ int beggar(int Nplayers, int *deck, int talkative) {
     return winner;
 }
 
+statistics get_statistics(int Nplayers, int games) {
+    int *deck = (int *)malloc(52 * sizeof(int));
+    init_deck(deck);
 
+    int total_turns = 0;
+    int shortest = INT_MAX;
+    int longest = 0;
+
+    for (int i = 0; i < games; i++) {
+        shuffle_deck(deck);
+        int turns = beggar(Nplayers, deck, 0);
+        total_turns += turns;
+
+        if (turns < shortest) {
+            shortest = turns;
+        }
+        if (turns > longest) {
+            longest = turns;
+        }
+    }
+
+    statistics stats;
+    stats.shortest = shortest;
+    stats.longest = longest;
+    stats.average = (double)total_turns / games;
+
+    free(deck);
+
+    return stats;
+ }
