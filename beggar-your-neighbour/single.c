@@ -23,6 +23,10 @@ int main(int argc, char *argv[]) {
 
     int total_turns = beggar(Nplayers, deck, 1);
 
+    int winner = beggar(Nplayers, deck, 0);
+
+    printf("Winner: Player %d\n", winner );
+
     printf("Game over! Total turns: %d\n", total_turns);
 
     return 0;

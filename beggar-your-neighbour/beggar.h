@@ -9,29 +9,13 @@ typedef struct {
 
 // Initialize a deck of cards
 void init_deck(int *deck);
-
-// Shuffle a deck of cards
 void shuffle_deck(int *deck);
-
-// Print a single card
 void print_card(int card);
-
-char rankChar(int card);
-
-// Determine if the game is finished
 int finished(int **players, int Nplayers);
-
-// Calculate the reward for a player
-int reward(int **players, int *pile, int pile_top, int current_players);
-
-// Take a turn in the game
-int take_turn(int **players, int *pile, int *pile_top, int *penalty, int player_index, int Nplayers);
-
-// Print the current game state
+int *take_turn(int **player, int **pile, int *pile_top, int penalty);
 void print_game_state(int turn, int current_player, int *pile, int pile_top, int penalty, int **players, int Nplayers);
-
-// Play the Beggar-My-Neighbor game and return the total number of turns
 int beggar(int Nplayers, int *deck, int talkative);
+
 
 // Get statistics for the Beggar-My-Neighbor game
 statistics get_statistics(int Nplayers, int games);
