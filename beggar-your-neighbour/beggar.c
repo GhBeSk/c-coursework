@@ -152,15 +152,24 @@ int beggar(int Nplayers, int *deck, int talkative) {
 }
 
 statistics get_statistics(int Nplayers, int games) {
-    int *deck = (int *)malloc(52 * sizeof(int));
-    init_deck(deck);
-
     int total_turns = 0;
     int shortest = INT_MAX;
     int longest = 0;
 
     for (int i = 0; i < games; i++) {
+        int *deck = (int *)malloc(52 * sizeof(int));
+        init_deck(deck);
         shuffle_deck(deck);
+
+        int **players = (int **)malloc(Nplayers * sizeof(int *));
+        for (int j = 0; j < Nplayers; j++) {
+            players[j] = (int *)calloc(52, sizeof(int));
+        }
+
+        for (int j = 0; j < 52; j++) {
+            players[j % Nplayers][j / Nplayers] = deck[j];
+        }
+
         int turns = beggar(Nplayers, deck, 0);
         total_turns += turns;
 
@@ -170,6 +179,12 @@ statistics get_statistics(int Nplayers, int games) {
         if (turns > longest) {
             longest = turns;
         }
+
+        for (int j = 0; j < Nplayers; j++) {
+            free(players[j]);
+        }
+        free(players);
+        free(deck);
     }
 
     statistics stats;
@@ -177,7 +192,6 @@ statistics get_statistics(int Nplayers, int games) {
     stats.longest = longest;
     stats.average = (double)total_turns / games;
 
-    free(deck);
-
     return stats;
- }
+}
+

@@ -21,9 +21,8 @@ int main(int argc, char *argv[]) {
 
     printf("Starting game with %d players\n", Nplayers);
 
-    int total_turns = beggar(Nplayers, deck, 1);
-
     int winner = beggar(Nplayers, deck, 0);
+    int total_turns = (Nplayers - 1) * winner;
 
     printf("Winner: Player %d\n", winner );
 
