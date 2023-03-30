@@ -21,8 +21,11 @@ char rankChar(int card);
 // Determine if the game is finished
 int finished(int **players, int Nplayers);
 
+// Calculate the reward for a player
+int reward(int *player, int *pile, int pile_top);
+
 // Take a turn in the game
-int take_turn(int **players, int *pile, int *pile_top, int *penalty, int player_index);
+int take_turn(int **players, int *pile, int *pile_top, int *penalty, int player_index, int Nplayers);
 
 // Print the current game state
 void print_game_state(int turn, int current_player, int *pile, int pile_top, int penalty, int **players, int Nplayers);

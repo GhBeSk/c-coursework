@@ -17,7 +17,7 @@ void shuffle_deck(int *deck) {
 
 void print_card(int card) {
     const char *suits[] = {"Clubs", "Diamonds", "Hearts", "Spades"};
-    const char *ranks[] = {"2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King", "Ace"};
+    const char *ranks[] = {"2", "3", "4", "5", "6", "7", "8", "9","Jack", "Queen", "King", "Ace"};
 
     int suit = (card - 1) / 13;
     int rank = (card - 1) % 13;
@@ -26,7 +26,7 @@ void print_card(int card) {
 }
 
 char rankChar(int card) {
-    const char *ranks = "23456789TJQKA";
+    const char *ranks = "23456789JQKA";
     int rank = (card - 1) % 13;
     return ranks[rank];
 }
@@ -41,7 +41,44 @@ int finished(int **players, int Nplayers) {
     return finished_count == Nplayers - 1;
 }
 
-int take_turn(int **players, int *pile, int *pile_top, int *penalty, int player_index) {
+int reward(int **players, int *pile, int pile_top, int current_player) {
+    int reward_cards[52] = {0};
+    int reward_top = 0;
+
+    if (pile_top == 0) {
+        return reward_top;
+    }
+
+    int top_card = pile[pile_top - 1];
+    int penalty = 0;
+    for (int i = 0; i < 52; i++) {
+        if (players[current_player][i] == 0) {
+            break;
+        }
+        int card = players[current_player][i];
+        players[current_player][i] = 0;
+        if (card == top_card) {
+            penalty = 0;
+            continue;
+        }
+        if (penalty > 0) {
+            penalty--;
+            continue;
+        }
+        reward_cards[reward_top++] = card;
+        if (card > 10) {
+            penalty = 14 - card;
+        }
+    }
+
+    for (int i = 0; i < reward_top; i++) {
+        pile[pile_top++] = reward_cards[i];
+    }
+
+    return reward_top;
+}
+
+int take_turn(int **players, int *pile, int *pile_top, int *penalty, int player_index, int Nplayers) {
     int top_card = players[player_index][0];
     for (int i = 0; i < 51; i++) {
         players[player_index][i] = players[player_index][i + 1];
@@ -59,9 +96,31 @@ int take_turn(int **players, int *pile, int *pile_top, int *penalty, int player_
     }
 
     if (*penalty == 0) {
-        int reward = *pile_top;
-        *pile_top = 0;
-        return reward;
+        int reward_top = reward(players, pile, *pile_top, player_index);
+        int reward[Nplayers];
+        for (int i = 0; i < Nplayers; i++) {
+            reward[i] = 0;
+        }
+
+        if (reward_top > 0) {
+            int next_player = (player_index + 1) % Nplayers;
+            while (players[next_player][0] == 0) {
+                next_player = (next_player + 1) % Nplayers;
+            }
+
+            for (int i = 0; i < reward_top; i++) {
+                int j = 0;
+                while (players[next_player][j] != 0) {
+                    j++;
+                }
+                players[next_player][j] = pile[i];
+                reward[next_player]++;
+            }
+            *pile_top = 0;
+            *penalty = 0;
+        }
+
+        return reward[player_index];
     } else {
         return 0;
     }
@@ -90,6 +149,7 @@ void print_game_state(int turn, int current_player, int *pile, int pile_top, int
         }
         printf("\n");
     }
+    printf("\n");
 }
 
 int beggar(int Nplayers, int *deck, int talkative) {
@@ -113,7 +173,7 @@ int beggar(int Nplayers, int *deck, int talkative) {
     while (!finished(players, Nplayers)) {
         turn++;
 
-        int reward = take_turn(players, pile, &pile_top, &penalty, current_player);
+        int reward = take_turn(players, pile, &pile_top, &penalty, current_player, Nplayers);
         if (reward > 0) {
             int next_player = (current_player + 1) % Nplayers;
             while (players[next_player][0] == 0) {
@@ -150,6 +210,7 @@ int beggar(int Nplayers, int *deck, int talkative) {
 
     return winner;
 }
+
 
 statistics get_statistics(int Nplayers, int games) {
     int *deck = (int *)malloc(52 * sizeof(int));
