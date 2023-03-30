@@ -23,7 +23,7 @@ int finished(int **players, int Nplayers);
 int take_turn(int **players, int *pile, int *pile_top, int *penalty, int player_index);
 
 // Print the current game state
-void print_game_state(int turn, int top_card, int current_player, int *pile, int pile_size, int **hands, int *hand_sizes, int Nplayers);
+void print_game_state(int turn, int current_player, int *pile, int pile_top, int penalty, int **players, int Nplayers);
 
 // Play the Beggar-My-Neighbor game and return the total number of turns
 int beggar(int Nplayers, int *deck, int talkative);
