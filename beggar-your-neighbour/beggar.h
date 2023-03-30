@@ -9,6 +9,7 @@ typedef struct {
 
 // Initialize a deck of cards
 void init_deck(int *deck);
+void shuffle_deck(int *deck);
 void print_card(int card);
 int finished(int **players, int Nplayers);
 int *take_turn(int **player, int **pile, int *pile_top, int penalty);

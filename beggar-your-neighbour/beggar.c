@@ -16,6 +16,10 @@ void print_card(int card) {
     printf("%s", ranks[card - 1]);
 }
 
+void shuffle_deck(int *deck) {
+    shuffle(deck, 52, -1); // Use -1 as seed for time-based randomization
+}
+
 int finished(int **players, int Nplayers) {
     int finished_count = 0;
     for (int i = 0; i < Nplayers; i++) {
