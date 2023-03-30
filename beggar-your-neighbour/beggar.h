@@ -22,7 +22,7 @@ char rankChar(int card);
 int finished(int **players, int Nplayers);
 
 // Calculate the reward for a player
-int reward(int *player, int *pile, int pile_top);
+int reward(int **player, int *pile, int pile_top);
 
 // Take a turn in the game
 int take_turn(int **players, int *pile, int *pile_top, int *penalty, int player_index, int Nplayers);
