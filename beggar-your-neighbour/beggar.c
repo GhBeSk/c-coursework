@@ -57,7 +57,12 @@ int *take_turn(int **player, int **pile, int *pile_top, int penalty) {
     }
 
     if (penalty) {
-        reward = (int *)malloc((*pile_top + 1) * sizeof(int));
+        int reward_size = *pile_top + 1;
+        reward = (int *)malloc(reward_size * sizeof(int));
+        if (reward == NULL) {
+            printf("Error: unable to allocate memory for reward\n");
+            exit(1);
+        }
         reward[0] = *pile_top;
         for (int i = 0; i < *pile_top; i++) {
             reward[i + 1] = (*pile)[i];
@@ -67,6 +72,7 @@ int *take_turn(int **player, int **pile, int *pile_top, int penalty) {
 
     return reward;
 }
+
 
 void print_game_state(int turn, int current_player, int *pile, int pile_top, int penalty, int **players, int Nplayers) {
     printf("Turn %d ", turn);
