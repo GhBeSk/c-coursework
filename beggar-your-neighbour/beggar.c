@@ -4,12 +4,6 @@
 #include <limits.h>
 #include "beggar.h"
 
-typedef struct {
-    int shortest;
-    int longest;
-    double average;
-} statistics;
-
 int finished(int **players, int Nplayers) {
     int finished_count = 0;
     for (int i = 0; i < Nplayers; i++) {
