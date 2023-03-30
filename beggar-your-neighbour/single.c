@@ -39,16 +39,13 @@ int main(int argc, char *argv[]) {
 
     printf("Starting game with %d players\n", Nplayers);
 
-    int turn_counter = 0;
-    int winner = -1;
+    
+    int total_turns = beggar(Nplayers, deck, 1);
+    int winner = beggar(Nplayers, deck, 0);
 
-    while (winner == -1) {
-        turn_counter++;
-        winner = beggar(Nplayers, deck, 0);
-    }
+    printf("Winner: Player %d\n", winner );
 
-    printf("Winner: Player %d\n", winner);
-    printf("Game over! Total turns: %d\n", turn_counter);
+    printf("Game over! Total turns: %d\n", total_turns);
 
     return 0;
 }
